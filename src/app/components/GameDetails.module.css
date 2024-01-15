@@ -1,0 +1,60 @@
+.headingContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: column;
+  width: 100%;
+}
+.headingContainer > div {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.titleContainer {
+  min-width: 45%;
+}
+.title {
+  color: white !important;
+  font-size: 32px;
+  margin-bottom: 12px !important;
+}
+.dateContainer {
+  text-align: center;
+}
+.date {
+  color: white !important;
+  font-size: 18px;
+  margin-bottom: 12px;
+}
+.score {
+  color: white !important;
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 0;
+  text-align: center;
+  flex: 1;
+}
+.contentContainer {
+  padding: 0 24px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+.pair {
+  display: flex;
+  flex-direction: row;
+  flex-basis: 100%;
+  justify-content: space-between;
+}
+.text {
+  color: white !important;
+  font-size: 16px;
+  text-align: center;
+}
+
+@media screen and (min-width: 600px) and (max-width: 1200px) {
+  .card {
+    min-width: 70vw;
+  }
+}

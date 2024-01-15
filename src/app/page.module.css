@@ -1,0 +1,24 @@
+.container{
+  display: flex;
+  height: 100vh;
+  flex-direction: column;
+  align-items: center;
+  /* background-color: rebeccapurple; */
+}
+.centeredCard {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%; /* adjust as needed */
+}
+
+.row{
+  margin-top: 12px;
+  width: 70%;
+}
+
+@media (max-width: 768px) {
+  .row {
+    width: 95%;
+  }
+}

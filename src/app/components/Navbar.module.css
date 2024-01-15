@@ -1,0 +1,29 @@
+@media (min-width: 1024px) {
+  .mobileNav {
+    margin-top: 20px;
+    display: none;
+  }
+  .bigmenu {
+    width: 100%;
+    display: flex;
+    align-items: center;
+  }
+}
+
+@media (max-width: 1024px) {
+  .bigmenu {
+    display: none;
+  }
+  .menubtn {
+    margin: 5px;
+    background-color: black;
+    color: white;
+  }
+  .mobileNav {
+    display: flex;
+    background-color: rgb(19, 19, 19);
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 16px;
+  }
+}
