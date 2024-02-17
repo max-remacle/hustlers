@@ -15,7 +15,7 @@ import {
 import data from "../../../games.json";
 
 export default function Page() {
-  const [games, setGames] = useState<any>([]);
+  // const [games, setGames] = useState<any>([]);
   console.log("rerender");
 
   // useEffect(() => {

@@ -14,5 +14,5 @@ export type Game = {
   opponent: string;
   field: string;
   dod: string | null;
-  dodTime: string;
+  dodTime: string | null;
 };

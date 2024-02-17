@@ -1,15 +1,15 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Game } from "@/app/lib/types/Game";
 import { List, Typography } from "antd";
+import PlayerTable from "@/app/components/PlayerTable";
+import { format } from "date-fns";
+
+import { getDisplayName } from "../../lib/utilities/Namemap";
+import { Game } from "@/app/lib/types/Game";
+import data from "../../../../games.json";
 import styles from "./page.module.css";
 
-import data from "../../../../games.json";
-import { getDisplayName } from "../../lib/utilities/Namemap";
-import { format } from "date-fns";
-import PlayerTable from "@/app/components/PlayerTable";
-
-const { Text, Title } = Typography;
+const { Text } = Typography;
 
 interface PageProps {
   params: {
@@ -28,7 +28,7 @@ export default function Page({ params }: PageProps) {
       return formattedDate;
     }
   };
-
+  
   useEffect(() => {
     setIsLoading(true);
     const game = data.find((game) => game.id === params.id);

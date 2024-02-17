@@ -19,12 +19,14 @@ const GameDetails: React.FC<GameDetailsProps> = (props) => {
   const date = new Date(game.date.seconds * 1000);
   const formattedDate = format(date, "MMMM do, yyyy, h:mm a");
 
-  let cardColour = "#0F0F1E";
+  let cardColour = "#ebebd3";
 
   if (game.teamScore > game.opponentScore) {
-    cardColour = "#006600";
+    cardColour = "rgba(0, 102, 0,1)";
+  } else if (game.teamScore == game.opponentScore && game.played) {
+    cardColour = "rgba(94, 94, 94,1)";
   } else if (game.teamScore < game.opponentScore) {
-    cardColour = "#9E0000";
+    cardColour = "rgba(158, 0, 0,1)";
   }
 
   return (
@@ -34,7 +36,11 @@ const GameDetails: React.FC<GameDetailsProps> = (props) => {
     >
       <Card
         bodyStyle={{ padding: "24px 5px" }}
-        style={{ backgroundColor: cardColour }}
+        style={{
+          backgroundColor: "#131313",
+          border: `2px solid ${cardColour}`,
+          boxShadow: `5px 5px 15px ${cardColour}`
+        }}
         className={styles.card}
         bordered={false}
       >
