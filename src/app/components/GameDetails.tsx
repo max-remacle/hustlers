@@ -5,6 +5,7 @@ import { Card, Divider, Typography } from "antd";
 import styles from "./GameDetails.module.css";
 import { Game } from "../lib/types/Game";
 import { getDisplayName } from "../lib/utilities/Namemap";
+import SpinComponent from "./Spin";
 
 const { Text } = Typography;
 
@@ -13,7 +14,6 @@ interface GameDetailsProps {
 }
 
 const GameDetails: React.FC<GameDetailsProps> = (props) => {
-  // Add your component logic here
   const { game } = props;
 
   const date = new Date(game.date.seconds * 1000);
@@ -39,7 +39,7 @@ const GameDetails: React.FC<GameDetailsProps> = (props) => {
         style={{
           backgroundColor: "#131313",
           border: `2px solid ${cardColour}`,
-          boxShadow: `5px 5px 15px ${cardColour}`
+          boxShadow: `5px 5px 15px ${cardColour}`,
         }}
         className={styles.card}
         bordered={false}
@@ -49,6 +49,7 @@ const GameDetails: React.FC<GameDetailsProps> = (props) => {
             {getDisplayName(game.opponent)}
           </Text>
           <Text className={styles.date}>{formattedDate}</Text>
+          <Text className={styles.date}>{game.field}</Text>
           <div>
             {game.played ? (
               <>
@@ -70,27 +71,31 @@ const GameDetails: React.FC<GameDetailsProps> = (props) => {
             )}
           </div>
         </div>
-        <Divider style={{ borderTop: "2px solid white" }} />
-        <div className={styles.contentContainer}>
-          <div className={styles.pair}>
-            <Text underline strong className={styles.text}>
-              Location
-            </Text>
-            <Text className={styles.text}>{game.field}</Text>
-          </div>
-          <div className={styles.pair}>
-            <Text underline strong className={styles.text}>
-              Dick of the Day
-            </Text>
-            <Text className={styles.text}>{game.dod}</Text>
-          </div>
-          <div className={styles.pair}>
-            <Text underline strong className={styles.text}>
-              Drink Time
-            </Text>
-            <Text className={styles.text}>{game.dodTime}</Text>
-          </div>
-        </div>
+        {game.played && (
+          <>
+            <Divider style={{ borderTop: "2px solid white" }} />
+            <div className={styles.contentContainer}>
+              <div className={styles.pair}>
+                <Text underline strong className={styles.text}>
+                  Location
+                </Text>
+                <Text className={styles.text}>{game.field}</Text>
+              </div>
+              <div className={styles.pair}>
+                <Text underline strong className={styles.text}>
+                  Dick of the Day
+                </Text>
+                <Text className={styles.text}>{game.dod}</Text>
+              </div>
+              <div className={styles.pair}>
+                <Text underline strong className={styles.text}>
+                  Drink Time
+                </Text>
+                <Text className={styles.text}>{game.dodTime}</Text>
+              </div>
+            </div>
+          </>
+        )}
       </Card>
     </Link>
   );

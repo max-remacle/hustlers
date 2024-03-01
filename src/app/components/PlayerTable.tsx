@@ -1,11 +1,13 @@
 "use client";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Badge, ConfigProvider, Table, Tag, theme } from "antd";
 
 import styles from "./PlayerTable.module.css";
 import allPlayers from "../../../players.json";
 import { Player } from "../lib/types/Player";
 import { Game } from "../lib/types/Game";
+import { collection, getDocs, query } from "firebase/firestore";
+import { db } from "../lib/Firebase";
 
 interface PlayerTableProps {
   game: Game;
@@ -19,14 +21,16 @@ type BadgeStatusType =
   | "default";
 
 const PlayerTable: React.FC<PlayerTableProps> = ({ game }) => {
+  const [allPlayers, setAllPlayers] = useState<Player[]>([]);
   const { confirmedPlayers, declinedPlayers } = game;
 
   const renderPlayerName = (text: string, record: Player) => {
-    const playerName = `${record.firstName} ${record.lastName}`;
+    const playerId = record.id;
+
     let status = "default";
-    if (confirmedPlayers.includes(playerName)) {
+    if (confirmedPlayers.some(obj => obj.id === playerId)) {
       status = "success";
-    } else if (declinedPlayers.includes(playerName)) {
+    } else if (declinedPlayers.some(obj => obj.id === playerId)) {
       status = "error";
     }
     return (
@@ -67,41 +71,24 @@ const PlayerTable: React.FC<PlayerTableProps> = ({ game }) => {
     },
   ];
 
-  // useEffect(() => {
-  //   console.log(allPlayers);
-  //   console.log(confirmedPlayers);
-  // }, [confirmedPlayers]);
-
-  // const sortedPlayers = [...allPlayers].sort((a, b) => {
-  //   const aIsConfirmed = confirmedPlayers.includes(a.firstName);
-  //   const aIsDeclined = declinedPlayers.includes(a.firstName);
-  //   const bIsConfirmed = confirmedPlayers.includes(b.firstName);
-  //   const bIsDeclined = declinedPlayers.includes(b.firstName);
-
-  //   if (aIsConfirmed && !bIsConfirmed) {
-  //     return -1;
-  //   }
-  //   if (!aIsConfirmed && bIsConfirmed) {
-  //     return 1;
-  //   }
-  //   if (aIsDeclined && !bIsDeclined) {
-  //     return -1;
-  //   }
-  //   if (!aIsDeclined && bIsDeclined) {
-  //     return 1;
-  //   }
-  //   return 0;
-  // });
+  useEffect(() => {
+    async function getPlayers() {
+      const querySnapshot = await getDocs(collection(db, "players"));
+      const players = querySnapshot.docs.map((doc) => doc.data());
+      setAllPlayers(players as Player[]);
+    }
+    getPlayers()
+  }, []);
 
   const sortedPlayers: Player[] = allPlayers
     .sort((a, b) => {
-      const aName = `${a.firstName} ${a.lastName}`;
-      const bName = `${b.firstName} ${b.lastName}`;
+      const aId = a.id;
+      const bId = b.id;
 
-      const aIsConfirmed = confirmedPlayers.includes(aName);
-      const aIsDeclined = declinedPlayers.includes(aName);
-      const bIsConfirmed = confirmedPlayers.includes(bName);
-      const bIsDeclined = declinedPlayers.includes(bName);
+      const aIsConfirmed = confirmedPlayers.some(obj => obj.id === aId);
+      const aIsDeclined = declinedPlayers.some(obj => obj.id === aId);
+      const bIsConfirmed = confirmedPlayers.some(obj => obj.id === bId);
+      const bIsDeclined = declinedPlayers.some(obj => obj.id === bId);
 
       if (aIsConfirmed && !bIsConfirmed) {
         return -1;
@@ -118,17 +105,14 @@ const PlayerTable: React.FC<PlayerTableProps> = ({ game }) => {
       return 0;
     })
     .map((player) => {
-      const playerName = `${player.firstName} ${player.lastName}`;
-      const rideRequest = game.rideRequests.includes(playerName);
-      const rideOffer = game.rideOffers.includes(playerName);
+      const rideRequest = game.rideRequests.some(obj => obj.id === player.id);
+      const rideOffer = game.rideOffers.some(obj => obj.id === player.id);
       return {
         ...player,
         rideRequest,
         rideOffer,
       };
     });
-
-  console.log(sortedPlayers);
 
   return (
     <ConfigProvider
@@ -141,6 +125,7 @@ const PlayerTable: React.FC<PlayerTableProps> = ({ game }) => {
         pagination={false}
         dataSource={sortedPlayers}
         columns={columns}
+        rowKey={(record) => record.id}
       />
     </ConfigProvider>
   );

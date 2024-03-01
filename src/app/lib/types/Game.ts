@@ -1,3 +1,5 @@
+import { Player } from "./Player";
+
 export type Game = {
   id: string;
   date: {
@@ -6,10 +8,10 @@ export type Game = {
   };
   played: boolean;
   opponentScore: number;
-  confirmedPlayers: string[];
-  declinedPlayers: string[];
-  rideOffers: string[];
-  rideRequests: string[];
+  confirmedPlayers: Player[];
+  declinedPlayers: Player[];
+  rideOffers: Player[];
+  rideRequests: Player[];
   teamScore: number;
   opponent: string;
   field: string;

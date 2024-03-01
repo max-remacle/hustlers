@@ -1,13 +1,21 @@
 "use client";
 import { useEffect, useState } from "react";
-import { List, Typography } from "antd";
+import { List, Spin, Typography } from "antd";
 import PlayerTable from "@/app/components/PlayerTable";
 import { format } from "date-fns";
 
 import { getDisplayName } from "../../lib/utilities/Namemap";
 import { Game } from "@/app/lib/types/Game";
-import data from "../../../../games.json";
 import styles from "./page.module.css";
+import {
+  DocumentData,
+  DocumentReference,
+  doc,
+  getDoc,
+  onSnapshot,
+} from "firebase/firestore";
+import { db } from "@/app/lib/Firebase";
+import SpinComponent from "@/app/components/Spin";
 
 const { Text } = Typography;
 
@@ -28,16 +36,53 @@ export default function Page({ params }: PageProps) {
       return formattedDate;
     }
   };
-  
+
   useEffect(() => {
     setIsLoading(true);
-    const game = data.find((game) => game.id === params.id);
-    setGame(game);
-    setIsLoading(false);
+    const getGame = () => {
+      const docRef = doc(db, "games", params.id);
+      const unsubscribe = onSnapshot(docRef, async (docSnap) => {
+        if (docSnap.exists()) {
+          const gameData = docSnap.data() as Game;
+          const confirmedPlayers = docSnap.data().confirmedPlayers || [];
+          const declinedPlayers = docSnap.data().declinedPlayers || [];
+
+          const playerDataPromises = confirmedPlayers.map(
+            async (playerRef: DocumentReference<unknown, DocumentData>) => {
+              const playerSnap = await getDoc(playerRef);
+              return playerSnap.data();
+            }
+          );
+          const declinedPlayerDataPromises = declinedPlayers.map(
+            async (playerRef: DocumentReference<unknown, DocumentData>) => {
+              const playerSnap = await getDoc(playerRef);
+              return playerSnap.data();
+            }
+          );
+
+          const playersData = await Promise.all(playerDataPromises);
+          const declinedPlayersData = await Promise.all(
+            declinedPlayerDataPromises
+          );
+          gameData.confirmedPlayers = playersData;
+          gameData.declinedPlayers = declinedPlayersData;
+
+          setGame(gameData);
+          setIsLoading(false);
+        } else {
+          console.log("No such document!");
+        }
+      });
+
+      // Clean up the listener when the component unmounts
+      return unsubscribe;
+    };
+    const unsubscribe = getGame();
+    return () => unsubscribe();
   }, [params.id]);
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <SpinComponent />;
   }
 
   return (
@@ -107,8 +152,11 @@ export default function Page({ params }: PageProps) {
               <div className={styles.listWrapper}>
                 <List
                   dataSource={game.confirmedPlayers}
-                  renderItem={(name) => (
-                    <List.Item className={styles.listText}>{name}</List.Item>
+                  renderItem={(player, index) => (
+                    <List.Item
+                      key={index}
+                      className={styles.listText}
+                    >{`${player.firstName} ${player.lastName}`}</List.Item>
                   )}
                   grid={{ column: 3, gutter: 16 }}
                 />
@@ -116,11 +164,7 @@ export default function Page({ params }: PageProps) {
             </div>
           </>
         ) : (
-          <div>
-            <PlayerTable
-              game={game}
-            />
-          </div>
+          <div>{game && <PlayerTable game={game} />}</div>
         )}
       </div>
     </main>

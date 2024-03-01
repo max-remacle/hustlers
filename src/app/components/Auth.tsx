@@ -30,7 +30,7 @@ function Auth() {
   const handleSubmit = async () => {
     try {
       if (isSignUp) {
-        await signUp(email, password, firstName, lastName);
+        signUp(email, password, firstName, lastName);
       } else {
         await signIn(email, password);
       }
@@ -77,7 +77,7 @@ function Auth() {
                 prefix={<UserOutlined />}
                 type="firstName"
                 placeholder="First Name"
-                onChange={(e) => setFirstName(e.target.value)}
+                onChange={(e) => setFirstName(e.target.value.trim())}
                 onFocus={() => setError(null)}
               />
             </Form.Item>
@@ -94,7 +94,7 @@ function Auth() {
                 prefix={<UserOutlined />}
                 type="lastName"
                 placeholder="Last Name"
-                onChange={(e) => setLastName(e.target.value)}
+                onChange={(e) => setLastName(e.target.value.trim())}
                 onFocus={() => setError(null)}
               />
             </Form.Item>
@@ -108,12 +108,13 @@ function Auth() {
             { type: "email", message: "The input is not a valid E-mail!" },
           ]}
           validateTrigger="onBlur"
+          normalize={(value) => value.trim()}
         >
           <Input
             size="large"
             prefix={<UserOutlined />}
             placeholder="Email"
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => setEmail(e.target.value.trim())}
             onFocus={() => setError(null)}
           />
         </Form.Item>
@@ -149,7 +150,7 @@ function Auth() {
               prefix={<LockOutlined />}
               type="password"
               placeholder="Password"
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => setPassword(e.target.value.trim())}
               onFocus={() => setError(null)}
             />
           </Form.Item>

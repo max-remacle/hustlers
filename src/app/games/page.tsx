@@ -1,62 +1,52 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Row, Col } from "antd";
 import GameDetails from "../components/GameDetails";
 import styles from "./page.module.css";
 import { db } from "../lib/Firebase";
 import {
   collection,
-  getDoc,
   getDocs,
-  orderBy,
   query,
 } from "firebase/firestore";
-
-import data from "../../../games.json";
+import { useGameStore } from "../store/game";
+import { Game } from "../lib/types/Game";
 
 export default function Page() {
-  // const [games, setGames] = useState<any>([]);
-  console.log("rerender");
+  const games = useGameStore((state: any) => state.games);
+  const updateGames = useGameStore((state: any) => state.updateGames);
 
-  // useEffect(() => {
-  //   async function getGamesAndPlayers() {
-  //     const gamesSnapshot = await getDocs(collection(db, "games"));
-  //     const games = [];
+  useEffect(() => {
+    if (games.length > 0) return;
+    const fetchGames = async () => {
+      const gamesRef = collection(db, "games");
+      const gamesSnapshot = await getDocs(query(gamesRef));
+      const games = gamesSnapshot.docs.map((doc) => {
+        const game = doc.data();
+        game.id = doc.id;
+        return game as Game;
+      });
+      updateGames(games);
+    };
+    fetchGames();
+  },[games]);
 
-  //     for (const gameDoc of gamesSnapshot.docs) {
-  //       const gameData = gameDoc.data();
-  //       const players = [];
-
-  //       for (const playerRef of gameData.players) {
-  //         const playerSnapshot = await getDoc(playerRef);
-  //         const playerData: any = playerSnapshot.data();
-  //         players.push(playerData.firstName);
-  //       }
-  //       games.push({
-  //         ...gameData,
-  //         players,
-  //       });
-  //     }
-  //     console.log(games);
-
-  //     setGames(games);
-  //   }
-
-  //   getGamesAndPlayers();
-  // }, []);
+  const sortedAndFilteredGames = useMemo(() => {
+    return games
+      .filter((game: Game) => game.played === true)
+      .sort((a: Game, b: Game) => b.date.seconds - a.date.seconds);
+  }, [games]);
 
   return (
     <main className={styles.container}>
       <Row className={styles.row} justify="start" gutter={[16, 16]}>
-        {data
-          .sort((a, b) => b.date.seconds - a.date.seconds)
-          .map((game) => (
-            <Col xs={24} sm={24} md={24} lg={12} xl={12} xxl={8} key={game.id}>
-              <div className={styles.centeredCard}>
-                <GameDetails game={game} />
-              </div>
-            </Col>
-          ))}
+        {sortedAndFilteredGames.map((game: Game) => (
+          <Col xs={24} sm={24} md={24} lg={12} xl={12} xxl={8} key={game.id}>
+            <div className={styles.centeredCard}>
+              <GameDetails game={game} />
+            </div>
+          </Col>
+        ))}
       </Row>
     </main>
   );

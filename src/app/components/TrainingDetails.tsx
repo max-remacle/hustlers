@@ -11,23 +11,7 @@ interface TrainingDetailsProps {
 }
 
 const TrainingDetails: React.FC<TrainingDetailsProps> = (props) => {
-  const training = {
-    id: "1",
-    field: "Monrad",
-    date: {
-      seconds: 1705107600,
-      nanoseconds: 804000000,
-    },
-    cancelled: false,
-    confirmedPlayers: [
-      "Max Remacle",
-      "Shannon Mickleburgh",
-      "Adam Harris",
-      "Ryan Stockley",
-      "Craig Van Stratum",
-    ],
-    declinedPlayers: ["Josh Brown", "Dave Burrows"],
-  };
+  const { training } = props;
 
   const date = new Date(training.date.seconds * 1000);
   const formattedDate = format(date, "MMMM do, yyyy, h:mm a");
@@ -63,7 +47,7 @@ const TrainingDetails: React.FC<TrainingDetailsProps> = (props) => {
             <div>
               <Text className={styles.score}>
                 <Text className={styles.score} underline>
-                  Confirmed Players
+                  Confirmed For Training:
                 </Text>
                 {` ${training.confirmedPlayers.length}`}
               </Text>

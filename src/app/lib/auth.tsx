@@ -8,7 +8,7 @@ import {
   onAuthStateChanged,
   createUserWithEmailAndPassword,
 } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 
 import { auth, db } from "./Firebase";
 
@@ -30,6 +30,8 @@ export async function signUp(
     await setDoc(doc(db, "players", user.uid), {
       firstName: firstName,
       lastName: lastName,
+      id: user.uid,
+      admin: false,
     });
   } catch (error) {
     console.error("Error creating user: ", error);
@@ -38,7 +40,15 @@ export async function signUp(
 
 export async function signIn(email: string, password: string) {
   await setPersistence(auth, browserLocalPersistence);
-  return signInWithEmailAndPassword(auth, email, password);
+  const userData: any = await signInWithEmailAndPassword(auth, email, password);
+  const docRef = doc(db, "players", userData.user.uid);
+  const docSnap = await getDoc(docRef);
+  if (docSnap.exists()) {
+    userData.user.admin = docSnap.data().admin;
+  } else {
+    console.log("No such document!");
+  }
+  return userData;
 }
 
 export async function signOut() {
@@ -46,10 +56,19 @@ export async function signOut() {
 }
 
 export function useUser() {
-  const [user, setUser] = useState<FirebaseUser | null | false>(false);
+  const [user, setUser] = useState<any | null | false>(false);
 
   useEffect(() => {
-    return onAuthStateChanged(auth, (user) => setUser(user));
+    return onAuthStateChanged(auth, async (user: any) => {
+      if (user) {
+        const docRef = doc(db, "players", user.uid);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          user.admin = docSnap.data().admin;
+        }
+      }
+      setUser(user);
+    });
   }, []);
 
   return user;

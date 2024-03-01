@@ -12,18 +12,43 @@
 .title {
   color: white !important;
   font-size: 32px !important;
-  margin-bottom: 20px !important;
+  margin-bottom: 0 !important;
 }
 
-.modalMask {
-  background-color: blue;
-}
 
 .modal {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+}
+
+.errorDiv {
+  display: flex;
+  flex-direction: column;
+  background-color: #a01414;
+  padding: 20px;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.titleContainer{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 50px;
+}
+
+.icon{
+  font-size: xx-large;
+  margin-top: 5px;
+}
+
+.errorText {
+  color: white;
+  font-size: 25px;
+  font-weight: 500;
 }
 
 @media screen and (max-width: 1200px) {

@@ -2,7 +2,7 @@
 "use client";
 import React, { useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { Button, Drawer, Menu, Typography } from "antd";
+import { Button, ConfigProvider, Drawer, Menu, Typography, theme } from "antd";
 import { MenuOutlined } from "@ant-design/icons";
 import styles from "./Navbar.module.css";
 import { Header } from "antd/es/layout/layout";
@@ -44,7 +44,6 @@ const Navbar: React.FC = (props) => {
   const handleMenuClick = ({ key }: { key: string }) => {
     if (key === "4") {
       signOut();
-      router.push("/");
       return;
     }
     const { target } = items.find((item) => item.key === key) || {};
@@ -55,7 +54,11 @@ const Navbar: React.FC = (props) => {
 
   const currentKey = items.find((item) => item.target === pathname)?.key;
   return (
-    <>
+    <ConfigProvider
+    theme={{
+      algorithm: theme.darkAlgorithm,
+    }}
+  >
       <Header className={styles.bigmenu}>
         <Title style={{ color: "white", marginBottom: 0 }}>Hustlers</Title>
         <Menu
@@ -95,12 +98,12 @@ const Navbar: React.FC = (props) => {
           <Button type="text" href="/leaderboard">
             Leaderboard
           </Button>
-          <Button type="text" href="/profile">
-            Profile
+          <Button type="text" onClick={() => signOut()}>
+            Log Out
           </Button>
         </div>
       </Drawer>
-    </>
+      </ConfigProvider>
   );
 };
 
