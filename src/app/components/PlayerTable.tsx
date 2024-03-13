@@ -1,12 +1,11 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { Badge, ConfigProvider, Table, Tag, theme } from "antd";
+import { Badge, Table, Tag } from "antd";
 
 import styles from "./PlayerTable.module.css";
-import allPlayers from "../../../players.json";
 import { Player } from "../lib/types/Player";
 import { Game } from "../lib/types/Game";
-import { collection, getDocs, query } from "firebase/firestore";
+import { collection, getDocs } from "firebase/firestore";
 import { db } from "../lib/Firebase";
 
 interface PlayerTableProps {
@@ -28,9 +27,9 @@ const PlayerTable: React.FC<PlayerTableProps> = ({ game }) => {
     const playerId = record.id;
 
     let status = "default";
-    if (confirmedPlayers.some(obj => obj.id === playerId)) {
+    if (confirmedPlayers.some((obj) => obj.id === playerId)) {
       status = "success";
-    } else if (declinedPlayers.some(obj => obj.id === playerId)) {
+    } else if (declinedPlayers.some((obj) => obj.id === playerId)) {
       status = "error";
     }
     return (
@@ -77,7 +76,7 @@ const PlayerTable: React.FC<PlayerTableProps> = ({ game }) => {
       const players = querySnapshot.docs.map((doc) => doc.data());
       setAllPlayers(players as Player[]);
     }
-    getPlayers()
+    getPlayers();
   }, []);
 
   const sortedPlayers: Player[] = allPlayers
@@ -85,10 +84,10 @@ const PlayerTable: React.FC<PlayerTableProps> = ({ game }) => {
       const aId = a.id;
       const bId = b.id;
 
-      const aIsConfirmed = confirmedPlayers.some(obj => obj.id === aId);
-      const aIsDeclined = declinedPlayers.some(obj => obj.id === aId);
-      const bIsConfirmed = confirmedPlayers.some(obj => obj.id === bId);
-      const bIsDeclined = declinedPlayers.some(obj => obj.id === bId);
+      const aIsConfirmed = confirmedPlayers.some((obj) => obj.id === aId);
+      const aIsDeclined = declinedPlayers.some((obj) => obj.id === aId);
+      const bIsConfirmed = confirmedPlayers.some((obj) => obj.id === bId);
+      const bIsDeclined = declinedPlayers.some((obj) => obj.id === bId);
 
       if (aIsConfirmed && !bIsConfirmed) {
         return -1;
@@ -105,8 +104,8 @@ const PlayerTable: React.FC<PlayerTableProps> = ({ game }) => {
       return 0;
     })
     .map((player) => {
-      const rideRequest = game.rideRequests.some(obj => obj.id === player.id);
-      const rideOffer = game.rideOffers.some(obj => obj.id === player.id);
+      const rideRequest = game.rideRequests.some((obj) => obj.id === player.id);
+      const rideOffer = game.rideOffers.some((obj) => obj.id === player.id);
       return {
         ...player,
         rideRequest,
@@ -115,19 +114,13 @@ const PlayerTable: React.FC<PlayerTableProps> = ({ game }) => {
     });
 
   return (
-    <ConfigProvider
-      theme={{
-        algorithm: theme.darkAlgorithm,
-      }}
-    >
-      <Table
-        className={styles.table}
-        pagination={false}
-        dataSource={sortedPlayers}
-        columns={columns}
-        rowKey={(record) => record.id}
-      />
-    </ConfigProvider>
+    <Table
+      className={styles.table}
+      pagination={false}
+      dataSource={sortedPlayers}
+      columns={columns}
+      rowKey={(record) => record.id}
+    />
   );
 };
 

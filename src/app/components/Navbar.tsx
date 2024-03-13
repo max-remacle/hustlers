@@ -7,6 +7,7 @@ import { MenuOutlined } from "@ant-design/icons";
 import styles from "./Navbar.module.css";
 import { Header } from "antd/es/layout/layout";
 import { signOut } from "../lib/auth";
+import Link from "next/link";
 
 const { Title } = Typography;
 
@@ -55,12 +56,14 @@ const Navbar: React.FC = (props) => {
   const currentKey = items.find((item) => item.target === pathname)?.key;
   return (
     <ConfigProvider
-    theme={{
-      algorithm: theme.darkAlgorithm,
-    }}
-  >
+      theme={{
+        algorithm: theme.darkAlgorithm,
+      }}
+    >
       <Header className={styles.bigmenu}>
-        <Title style={{ color: "white", marginBottom: 0 }}>Hustlers</Title>
+        <Link href={`/`}>
+          <Title style={{ color: "white", marginBottom: 0 }}>Hustlers</Title>
+        </Link>
         <Menu
           theme="dark"
           mode="horizontal"
@@ -72,7 +75,9 @@ const Navbar: React.FC = (props) => {
         />
       </Header>
       <div className={styles.mobileNav}>
-        <Title style={{ color: "white", marginBottom: 0 }}>Hustlers</Title>
+        <Link href={`/`}>
+          <Title style={{ color: "white", marginBottom: 0 }}>Hustlers</Title>
+        </Link>
         <Button
           className={styles.menubtn}
           size="large"
@@ -81,7 +86,7 @@ const Navbar: React.FC = (props) => {
         ></Button>
       </div>
       <Drawer
-        title={<Title style={{ textAlign: "center" }}>Hustlers</Title>}
+        title={<Title className={styles.mobileTitle}>Hustlers</Title>}
         size="large"
         placement="right"
         closable={true}
@@ -89,21 +94,25 @@ const Navbar: React.FC = (props) => {
         open={visible}
       >
         <div style={{ display: "flex", flexDirection: "column" }}>
-          <Button type="text" href="/">
+          <Button className={styles.mobileText} type="text" href="/">
             Dashboard
           </Button>
-          <Button type="text" href="/games">
+          <Button className={styles.mobileText} type="text" href="/games">
             Games
           </Button>
-          <Button type="text" href="/leaderboard">
+          <Button className={styles.mobileText} type="text" href="/leaderboard">
             Leaderboard
           </Button>
-          <Button type="text" onClick={() => signOut()}>
+          <Button
+            className={styles.mobileText}
+            type="text"
+            onClick={() => signOut()}
+          >
             Log Out
           </Button>
         </div>
       </Drawer>
-      </ConfigProvider>
+    </ConfigProvider>
   );
 };
 

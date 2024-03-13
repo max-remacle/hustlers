@@ -22,6 +22,7 @@ import { useGameStore } from "./store/game";
 import { Timestamp } from "firebase/firestore";
 import SpinComponent from "./components/Spin";
 import GameModal from "./components/GameModal";
+import { Dancing_Script } from "next/font/google";
 
 const DynamicModal = dynamic(() => import("antd").then((mod) => mod.Modal), {
   ssr: false,
@@ -55,6 +56,19 @@ function reducer(state: State, action: Action): State {
       return state;
   }
 }
+
+function getNextGame(games: Game[]): Game | undefined {
+  const sortedGames = [...games];
+  const now = new Date();
+  const nextGame = sortedGames.find(
+    (game) =>
+      new Timestamp(game.date.seconds, game.date.nanoseconds).toDate() > now &&
+      game.played === false
+  );
+  return nextGame;
+}
+
+const dancing = Dancing_Script({ subsets: ["latin"] });
 
 export default function Home() {
   const user = useUser();
@@ -96,17 +110,6 @@ export default function Home() {
       unsubscribeTraining();
     };
   }, [user, updateGames]);
-
-  function getNextGame(games: Game[]): Game | undefined {
-    const sortedGames = [...games];
-
-    const now = new Date();
-    const nextGame = sortedGames.find(
-      (game) =>
-        new Timestamp(game.date.seconds, game.date.nanoseconds).toDate() > now
-    );
-    return nextGame;
-  }
 
   const modalStyles = {
     mask: {
@@ -171,6 +174,13 @@ export default function Home() {
           </div>
           {state.training && <TrainingDetails training={state.training} />}
         </div>
+        <Title
+          className={dancing.className}
+          style={{ color: "white", fontSize: "36px", marginTop: "16px" }}
+          level={2}
+        >
+          FUCK MARIST
+        </Title>
       </main>
     );
   }

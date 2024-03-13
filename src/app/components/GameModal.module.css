@@ -1,6 +1,26 @@
 .modal {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.modalTitle {
+  margin: 0;
+  background-color: #181818;
+  color: white !important;
+  text-align: center;
+}
+.modalText {
+  color: white;
+}
+
+.modalWidth{
+  width: 50vw;
+
+}
+
+@media screen and (min-width: 1201px) and (max-width: 1920px) {
+  .modal {
+    width: 70vw;
   }
+}

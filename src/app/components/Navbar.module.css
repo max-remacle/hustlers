@@ -7,7 +7,7 @@
     width: 100%;
     display: flex;
     align-items: center;
-  }
+  }            
 }
 
 @media (max-width: 1024px) {
@@ -25,5 +25,13 @@
     flex-direction: row;
     justify-content: space-between;
     padding: 16px;
+  }
+  .mobileTitle{
+    text-align: center;
+    margin-bottom: 0 !important;
+    width: 92%;
+  } 
+  .mobileText{
+    font-size: 18px;
   }
 }

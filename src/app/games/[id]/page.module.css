@@ -19,6 +19,7 @@
     ),
     url(/banner.png);
   background-size: cover;
+  padding-bottom: 20px;
 }
 
 .scoreDiv {
@@ -120,15 +121,50 @@
   margin-top: 15px;
 }
 
+.tableAndInputWrapper {
+  margin: 5px;
+  display: flex;
+  flex-direction: column;
+  width: 80%;
+  justify-content: center;
+}
+
+.formItem {
+  width: 40%;
+}
+
+.form {
+  display: flex;
+  width: 100%;
+  justify-content: space-evenly;
+}
+
+.editButton {
+  align-self: flex-end;
+  position: relative;
+  top: 10px;
+  right: 10px;
+  font-size: 24px;
+}           
+
 @media screen and (max-width: 480px) {
   .detailsTextWrapper > div {
     width: 100%;
+  }
+  .banner{
+    padding-bottom: 0;
   }
 
   .detailsText,
   .listText,
   .detailsTitle {
     font-size: 18px;
+  }
+  .formItem {
+    width: 45%;
+  }
+  .editButton {
+    font-size: 20px;
   }
 }
 
