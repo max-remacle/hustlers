@@ -23,6 +23,7 @@ import { Timestamp } from "firebase/firestore";
 import SpinComponent from "./components/Spin";
 import GameModal from "./components/GameModal";
 import { Dancing_Script } from "next/font/google";
+import next from "next";
 
 const DynamicModal = dynamic(() => import("antd").then((mod) => mod.Modal), {
   ssr: false,
@@ -102,6 +103,7 @@ export default function Home() {
 
     const unsubscribeTraining = onSnapshot(trainingQuery, (snapshot) => {
       const latestTraining = snapshot.docs[0]?.data();
+      latestTraining.id = snapshot.docs[0]?.id;
       dispatch({ type: "SET_TRAINING", training: latestTraining as Training });
     });
 
@@ -123,7 +125,7 @@ export default function Home() {
   const closeModal = () => {
     dispatch({ type: "SET_MODAL", modalVisible: false, modalType: "" });
   };
-
+  
   if (user) {
     return (
       <main className={styles.container}>

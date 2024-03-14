@@ -3,6 +3,7 @@ import { Card, Typography } from "antd";
 import { Training } from "../lib/types/Training";
 import { format } from "date-fns";
 import styles from "./TrainingDetails.module.css";
+import Link from "next/link";
 
 const { Text } = Typography;
 
@@ -21,8 +22,13 @@ const TrainingDetails: React.FC<TrainingDetailsProps> = (props) => {
   if (training.cancelled) {
     cardColour = "rgba(158, 0, 0,1";
   }
+  console.log(training);
 
   return (
+    <Link
+    style={{ minWidth: "100%", minHeight: "100%" }}
+    href={`/training/${training.id}`}
+  >
     <Card
       bodyStyle={{ padding: "24px 5px" }}
       style={{
@@ -56,6 +62,7 @@ const TrainingDetails: React.FC<TrainingDetailsProps> = (props) => {
         )}
       </div>
     </Card>
+  </Link>
   );
 };
 

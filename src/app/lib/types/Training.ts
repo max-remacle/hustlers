@@ -9,4 +9,5 @@ export type Training = {
   };
   cancelled: boolean;
   confirmedPlayers: Player[];
+  declinedPlayers: Player[];
 };

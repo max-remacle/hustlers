@@ -1,11 +1,17 @@
 import React, { useState } from "react";
-import { Modal, Button, Input, Form, DatePicker } from "antd";
+import { Modal, Button, Input, Form, DatePicker, Switch } from "antd";
 import { Dayjs } from "dayjs";
 
 import styles from "./GameModal.module.css";
 import Title from "antd/es/typography/Title";
 import Text from "antd/es/typography/Text";
-import { addDoc, collection, doc, updateDoc } from "firebase/firestore";
+import {
+  Timestamp,
+  addDoc,
+  collection,
+  doc,
+  updateDoc,
+} from "firebase/firestore";
 import { db } from "../lib/Firebase";
 
 type GameModalProps = {
@@ -13,6 +19,9 @@ type GameModalProps = {
   closeModal: () => void;
   update?: boolean;
   gameId?: string;
+  opponentProp?: string;
+  fieldProp?: string;
+  dateProp?: Dayjs | null;
 };
 
 const GameModal: React.FC<GameModalProps> = ({
@@ -20,10 +29,14 @@ const GameModal: React.FC<GameModalProps> = ({
   closeModal,
   update,
   gameId,
+  opponentProp,
+  fieldProp,
+  dateProp,
 }) => {
-  const [opponent, setOpponent] = useState<string>("");
-  const [field, setField] = useState<string>("");
-  const [date, setDate] = useState<Dayjs | null>(null);
+  const [futureUpdate, setFutureUpdate] = useState<boolean>(false);
+  const [opponent, setOpponent] = useState<string>(opponentProp || "");
+  const [field, setField] = useState<string>(fieldProp || "");
+  const [date, setDate] = useState<Dayjs | null>(dateProp || null);
   const [teamScore, setTeamScore] = useState<number>(0);
   const [opponentScore, setOpponentScore] = useState<number>(0);
   const [dod, setDod] = useState<string>("");
@@ -67,20 +80,32 @@ const GameModal: React.FC<GameModalProps> = ({
           await addDoc(gameRef, newGame);
           closeModal();
         } else {
-          const gameRef = doc(db, "games", gameId!);
-          await updateDoc(gameRef, {
-            teamScore,
-            opponentScore,
-            dod,
-            dodTime,
-            played: true,
-          });
+          if (futureUpdate) {
+            const gameRef = doc(db, "games", gameId!);
+            await updateDoc(gameRef, {
+              opponent,
+              field,
+              date: Timestamp.fromDate(date!.toDate()),
+            });
+            closeModal();
+          } else {
+            const gameRef = doc(db, "games", gameId!);
+            await updateDoc(gameRef, {
+              teamScore,
+              opponentScore,
+              dod,
+              dodTime,
+              played: true,
+            });
+            closeModal();
+          }
         }
       }
     } catch (err: any) {
       console.error("Error adding document: ", err);
     }
   };
+  console.log(opponentProp);
 
   return (
     <>
@@ -97,8 +122,12 @@ const GameModal: React.FC<GameModalProps> = ({
           </Title>
         }
       >
-        {update ? (
+        {update && !futureUpdate ? (
           <Form onFinish={handleSubmit} layout="vertical">
+            <div className={styles.toggle}>
+              <Text className={styles.modalText}>Change to upcoming game?</Text>
+              <Switch onChange={() => setFutureUpdate((prev) => !prev)} />
+            </div>
             <div style={{ display: "flex" }}>
               <Form.Item
                 name="teamScore"
@@ -195,7 +224,18 @@ const GameModal: React.FC<GameModalProps> = ({
             </Form.Item>
           </Form>
         ) : (
-          <Form onFinish={handleSubmit} layout="vertical">
+          <Form
+            onFinish={handleSubmit}
+            layout="vertical"
+          >
+            {update && (
+              <div className={styles.toggle}>
+                <Text className={styles.modalText}>
+                  Change to upcoming game?
+                </Text>
+                <Switch onChange={() => setFutureUpdate((prev) => !prev)} />
+              </div>
+            )}
             {modalType === "Game" && (
               <>
                 <Form.Item
@@ -209,9 +249,12 @@ const GameModal: React.FC<GameModalProps> = ({
                     { required: true, message: "Please Enter an Opponent" },
                   ]}
                   validateTrigger="onBlur"
+                  initialValue={opponent}
                 >
                   <Input
                     size="large"
+                    defaultValue={opponent}
+                    value={opponent}
                     placeholder="Add Opponent"
                     onChange={(e) => setOpponent(e.target.value.trim())}
                   />
@@ -227,9 +270,11 @@ const GameModal: React.FC<GameModalProps> = ({
               name="field"
               rules={[{ required: true, message: "Please Enter a Field" }]}
               validateTrigger="onBlur"
+              initialValue={field}
             >
               <Input
                 size="large"
+                defaultValue={field}
                 placeholder="Add Field"
                 onChange={(e) => setField(e.target.value.trim())}
               />
@@ -243,8 +288,10 @@ const GameModal: React.FC<GameModalProps> = ({
               name="date"
               rules={[{ required: true, message: "Please Enter a Date" }]}
               validateTrigger="onBlur"
+              initialValue={date!}
             >
               <DatePicker
+                defaultValue={date!}
                 use12Hours
                 size="large"
                 showTime={{ format: "HH:mm" }}

@@ -7,9 +7,10 @@ import { Player } from "../lib/types/Player";
 import { Game } from "../lib/types/Game";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../lib/Firebase";
+import { Training } from "../lib/types/Training";
 
 interface PlayerTableProps {
-  game: Game;
+  game: Game | Training;
 }
 
 type BadgeStatusType =
@@ -52,21 +53,23 @@ const PlayerTable: React.FC<PlayerTableProps> = ({ game }) => {
       title: "Ride Request",
       dataIndex: "rideRequest",
       key: "rideRequest",
-      render: (rideRequest: boolean) => (
-        <Tag color={rideRequest ? "green" : "default"}>
-          {rideRequest ? "Yes" : "No"}
-        </Tag>
-      ),
+      render: (rideRequest: boolean) =>
+        "rideRequests" in game ? (
+          <Tag color={rideRequest ? "green" : "default"}>
+            {rideRequest ? "Yes" : "No"}
+          </Tag>
+        ) : null,
     },
     {
       title: "Ride Offer",
       dataIndex: "rideOffer",
       key: "rideOffer",
-      render: (rideOffer: boolean) => (
-        <Tag color={rideOffer ? "green" : "default"}>
-          {rideOffer ? "Yes" : "No"}
-        </Tag>
-      ),
+      render: (rideOffer: boolean) =>
+        "rideOffers" in game ? (
+          <Tag color={rideOffer ? "green" : "default"}>
+            {rideOffer ? "Yes" : "No"}
+          </Tag>
+        ) : null,
     },
   ];
 
@@ -104,8 +107,13 @@ const PlayerTable: React.FC<PlayerTableProps> = ({ game }) => {
       return 0;
     })
     .map((player) => {
-      const rideRequest = game.rideRequests.some((obj) => obj.id === player.id);
-      const rideOffer = game.rideOffers.some((obj) => obj.id === player.id);
+      let rideRequest = false;
+      let rideOffer = false;
+
+      if ("rideRequests" in game && "rideOffers" in game) {
+        rideRequest = game.rideRequests.some((obj) => obj.id === player.id);
+        rideOffer = game.rideOffers.some((obj) => obj.id === player.id);
+      }
       return {
         ...player,
         rideRequest,

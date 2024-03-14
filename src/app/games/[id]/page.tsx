@@ -18,6 +18,7 @@ import styles from "./page.module.css";
 import {
   DocumentData,
   DocumentReference,
+  Timestamp,
   arrayRemove,
   arrayUnion,
   doc,
@@ -29,6 +30,7 @@ import { db } from "@/app/lib/Firebase";
 import SpinComponent from "@/app/components/Spin";
 import { useUser } from "@/app/lib/auth";
 import GameModal from "@/app/components/GameModal";
+import dayjs from "dayjs";
 
 const { Text } = Typography;
 
@@ -182,7 +184,7 @@ export default function Page({ params }: PageProps) {
       ) : (
         <>
           <div className={styles.banner}>
-            {!state.game?.played && (
+            {!state.game?.played && user.admin && (
               <EditOutlined
                 className={styles.editButton}
                 onClick={() =>
@@ -334,6 +336,14 @@ export default function Page({ params }: PageProps) {
                     modalType={state.modalType}
                     update={true}
                     gameId={params.id}
+                    opponentProp={state.game!.opponent}
+                    fieldProp={state.game!.field}
+                    dateProp={dayjs(
+                      new Timestamp(
+                        state.game!.date.seconds,
+                        state.game!.date.nanoseconds
+                      ).toDate()
+                    )}
                   />
                 )}
               </ConfigProvider>
