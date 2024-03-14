@@ -105,7 +105,6 @@ const GameModal: React.FC<GameModalProps> = ({
       console.error("Error adding document: ", err);
     }
   };
-  console.log(opponentProp);
 
   return (
     <>
@@ -224,10 +223,7 @@ const GameModal: React.FC<GameModalProps> = ({
             </Form.Item>
           </Form>
         ) : (
-          <Form
-            onFinish={handleSubmit}
-            layout="vertical"
-          >
+          <Form onFinish={handleSubmit} layout="vertical">
             {update && (
               <div className={styles.toggle}>
                 <Text className={styles.modalText}>
