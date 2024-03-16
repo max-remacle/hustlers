@@ -9,6 +9,7 @@ import {
   onSnapshot,
   orderBy,
   query,
+  where,
 } from "firebase/firestore";
 import { PlusCircleOutlined } from "@ant-design/icons";
 import Title from "antd/es/typography/Title";
@@ -23,7 +24,6 @@ import { Timestamp } from "firebase/firestore";
 import SpinComponent from "./components/Spin";
 import GameModal from "./components/GameModal";
 import { Dancing_Script } from "next/font/google";
-import next from "next";
 
 const DynamicModal = dynamic(() => import("antd").then((mod) => mod.Modal), {
   ssr: false,
@@ -87,7 +87,8 @@ export default function Home() {
     const gameQuery = query(collection(db, "games"), orderBy("date", "asc"));
     const trainingQuery = query(
       collection(db, "trainings"),
-      orderBy("date", "desc"),
+      where("date", ">", Timestamp.now()),
+      orderBy("date", "asc"),
       limit(1)
     );
 
