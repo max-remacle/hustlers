@@ -1,7 +1,7 @@
 "use client";
 import SpinComponent from "@/app/components/Spin";
 import React, { useState, useEffect } from "react";
-import { ConfigProvider, Form, Select, Typography, theme } from "antd";
+import { ConfigProvider, Form, Select, Switch, Typography, theme } from "antd";
 import PlayerTable from "@/app/components/PlayerTable";
 import { format } from "date-fns";
 import { Training } from "@/app/lib/types/Training";
@@ -160,17 +160,13 @@ export default function Page({ params }: PageProps) {
                       className={styles.formItem}
                       label={
                         <Text className={styles.detailsText} strong>
-                          Is Training Cancelled?
+                          Cancel Training
                         </Text>
                       }
                     >
-                      <Select
-                        style={{ width: "100%" }}
+                      <Switch
+                        checked={training!.cancelled}
                         onChange={(value) => handleCancel(value)}
-                        options={[
-                          { label: "Training On", value: false },
-                          { label: "Cancelled", value: true },
-                        ]}
                       />
                     </Form.Item>
                   )}

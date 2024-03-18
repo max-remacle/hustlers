@@ -41,7 +41,7 @@ const PlayerTable: React.FC<PlayerTableProps> = ({ game }) => {
     );
   };
 
-  const columns = [
+  const gameColumns = [
     {
       title: `Confirmed Players: ${confirmedPlayers.length}`,
       dataIndex: "firstName",
@@ -53,23 +53,31 @@ const PlayerTable: React.FC<PlayerTableProps> = ({ game }) => {
       title: "Ride Request",
       dataIndex: "rideRequest",
       key: "rideRequest",
-      render: (rideRequest: boolean) =>
-        "rideRequests" in game ? (
-          <Tag color={rideRequest ? "green" : "default"}>
-            {rideRequest ? "Yes" : "No"}
-          </Tag>
-        ) : null,
+      render: (rideRequest: boolean) => (
+        <Tag color={rideRequest ? "green" : "default"}>
+          {rideRequest ? "Yes" : "No"}
+        </Tag>
+      ),
     },
     {
       title: "Ride Offer",
       dataIndex: "rideOffer",
       key: "rideOffer",
-      render: (rideOffer: boolean) =>
-        "rideOffers" in game ? (
-          <Tag color={rideOffer ? "green" : "default"}>
-            {rideOffer ? "Yes" : "No"}
-          </Tag>
-        ) : null,
+      render: (rideOffer: boolean) => (
+        <Tag color={rideOffer ? "green" : "default"}>
+          {rideOffer ? "Yes" : "No"}
+        </Tag>
+      ),
+    },
+  ];
+
+  const trainingColumns = [
+    {
+      title: `Confirmed Players: ${confirmedPlayers.length}`,
+      dataIndex: "firstName",
+      key: "name",
+      width: "70%",
+      render: renderPlayerName,
     },
   ];
 
@@ -126,7 +134,7 @@ const PlayerTable: React.FC<PlayerTableProps> = ({ game }) => {
       className={styles.table}
       pagination={false}
       dataSource={sortedPlayers}
-      columns={columns}
+      columns={"rideRequests" in game ? gameColumns : trainingColumns}
       rowKey={(record) => record.id}
     />
   );
