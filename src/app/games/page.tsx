@@ -1,18 +1,17 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
-import { Row, Col } from "antd";
+import { Row, Col, Switch, Divider, Typography } from "antd";
 import GameDetails from "../components/GameDetails";
 import styles from "./page.module.css";
 import { db } from "../lib/Firebase";
-import {
-  collection,
-  getDocs,
-  query,
-} from "firebase/firestore";
+import { collection, getDocs, query } from "firebase/firestore";
 import { useGameStore } from "../store/game";
 import { Game } from "../lib/types/Game";
 
+const { Text } = Typography;
+
 export default function Page() {
+  const [playedGames, setPlayedGames] = useState<boolean>(true);
   const games = useGameStore((state: any) => state.games);
   const updateGames = useGameStore((state: any) => state.updateGames);
 
@@ -29,16 +28,24 @@ export default function Page() {
       updateGames(games);
     };
     fetchGames();
-  },[games]);
+  }, [games]);
 
   const sortedAndFilteredGames = useMemo(() => {
     return games
-      .filter((game: Game) => game.played === true)
-      .sort((a: Game, b: Game) => b.date.seconds - a.date.seconds);
-  }, [games]);
+      .filter((game: Game) => game.played === playedGames)
+      .sort((a: Game, b: Game) => {
+        if (playedGames) return b.date.seconds - a.date.seconds;
+        return a.date.seconds - b.date.seconds;
+      });
+  }, [games, playedGames]);
 
   return (
     <main className={styles.container}>
+      <Text className={styles.switchText}>
+        {playedGames ? "View Upcoming Games" : "View Played Games"}
+      </Text>
+      <Switch onChange={() => setPlayedGames((prev) => !prev)} />
+      <Divider style={{ background: "whitesmoke" }} />
       <Row className={styles.row} justify="start" gutter={[16, 16]}>
         {sortedAndFilteredGames.map((game: Game) => (
           <Col xs={24} sm={24} md={24} lg={12} xl={12} xxl={8} key={game.id}>

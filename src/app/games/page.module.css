@@ -17,6 +17,12 @@
     margin-top: 12px;
     width: 70%;
   }
+
+  .switchText{
+    color: whitesmoke;
+    margin-bottom: 10px;
+    font-weight: bold;
+  }
   
   @media (max-width: 1024px) {
     .row {
