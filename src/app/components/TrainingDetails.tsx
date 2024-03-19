@@ -22,6 +22,7 @@ const TrainingDetails: React.FC<TrainingDetailsProps> = (props) => {
   if (training.cancelled) {
     cardColour = "rgba(158, 0, 0,1";
   }
+  
   return (
     <Link
       style={{ minWidth: "100%", minHeight: "100%" }}

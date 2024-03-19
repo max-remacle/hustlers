@@ -1,5 +1,13 @@
 import React, { useState } from "react";
-import { Modal, Button, Input, Form, DatePicker, Switch } from "antd";
+import {
+  Modal,
+  Button,
+  Input,
+  Form,
+  DatePicker,
+  Switch,
+  Popconfirm,
+} from "antd";
 import { Dayjs } from "dayjs";
 
 import styles from "./GameModal.module.css";
@@ -19,6 +27,7 @@ type GameModalProps = {
   closeModal: () => void;
   update?: boolean;
   gameId?: string;
+  gameCancelled?: boolean;
   opponentProp?: string;
   fieldProp?: string;
   dateProp?: Dayjs | null;
@@ -32,6 +41,7 @@ const GameModal: React.FC<GameModalProps> = ({
   opponentProp,
   fieldProp,
   dateProp,
+  gameCancelled,
 }) => {
   const [futureUpdate, setFutureUpdate] = useState<boolean>(false);
   const [opponent, setOpponent] = useState<string>(opponentProp || "");
@@ -106,6 +116,19 @@ const GameModal: React.FC<GameModalProps> = ({
     }
   };
 
+  const handleCancel = async () => {
+    try {
+      const gameRef = doc(db, "games", gameId!);
+      const gameUpdate = {
+        cancelled: !gameCancelled,
+      };
+      await updateDoc(gameRef, gameUpdate);
+      closeModal();
+    } catch (err: any) {
+      console.error("Error updating document: ", err);
+    }
+  };
+
   return (
     <>
       <Modal
@@ -124,8 +147,13 @@ const GameModal: React.FC<GameModalProps> = ({
         {update && !futureUpdate ? (
           <Form onFinish={handleSubmit} layout="vertical">
             <div className={styles.toggle}>
-              <Text className={styles.modalText}>Change to upcoming game?</Text>
-              <Switch onChange={() => setFutureUpdate((prev) => !prev)} />
+              <Text className={styles.modalText}>
+                Has this game been played?
+              </Text>
+              <Switch
+                defaultChecked
+                onChange={() => setFutureUpdate((prev) => !prev)}
+              />
             </div>
             <div style={{ display: "flex" }}>
               <Form.Item
@@ -227,7 +255,7 @@ const GameModal: React.FC<GameModalProps> = ({
             {update && (
               <div className={styles.toggle}>
                 <Text className={styles.modalText}>
-                  Change to upcoming game?
+                  Has this game been played?
                 </Text>
                 <Switch onChange={() => setFutureUpdate((prev) => !prev)} />
               </div>
@@ -288,11 +316,13 @@ const GameModal: React.FC<GameModalProps> = ({
             >
               <DatePicker
                 defaultValue={date!}
-                use12Hours
                 size="large"
                 showTime={{ format: "HH:mm" }}
                 onChange={(e) => setDate(e)}
                 value={date}
+                inputReadOnly={true}
+                placement="topLeft"
+                popupStyle={{ marginLeft: "150px", width: "95%" }}
               />
             </Form.Item>
             <Form.Item>
@@ -304,6 +334,23 @@ const GameModal: React.FC<GameModalProps> = ({
               >
                 {update ? "Update" : "Add"}
               </Button>
+              <Popconfirm
+                title="Cancel the game"
+                description="Are you sure to cancel this game?"
+                onConfirm={handleCancel}
+                okText="Yes"
+                cancelText="No"
+              >
+                <Button
+                  style={{ marginTop: "15px", width: "100%" }}
+                  size="large"
+                  type="primary"
+                  ghost={gameCancelled}
+                  danger
+                >
+                  {gameCancelled ? "Un-Cancel" : "Cancel"}
+                </Button>
+              </Popconfirm>
             </Form.Item>
           </Form>
         )}

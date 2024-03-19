@@ -1,7 +1,15 @@
 "use client";
 import SpinComponent from "@/app/components/Spin";
 import React, { useState, useEffect } from "react";
-import { ConfigProvider, Form, Select, Switch, Typography, theme } from "antd";
+import {
+  Button,
+  ConfigProvider,
+  Form,
+  Select,
+  Switch,
+  Typography,
+  theme,
+} from "antd";
 import PlayerTable from "@/app/components/PlayerTable";
 import { format } from "date-fns";
 import { Training } from "@/app/lib/types/Training";
@@ -21,6 +29,7 @@ const { Text } = Typography;
 
 import styles from "./page.module.css";
 import { useUser } from "@/app/lib/auth";
+import { tr } from "date-fns/locale/tr";
 
 interface PageProps {
   params: {
@@ -33,6 +42,18 @@ const formatDate = (training: Training) => {
     const date = new Date(training.date.seconds * 1000);
     const formattedDate = format(date, "MMMM do, yyyy, h:mm a");
     return formattedDate;
+  }
+};
+
+const currentAvailibility = (training: Training, user: any) => {
+  if (training.confirmedPlayers.some((player) => player.id === user.uid)) {
+    return "confirmed";
+  } else if (
+    training.declinedPlayers.some((player) => player.id === user.uid)
+  ) {
+    return "declined";
+  } else {
+    return "Unconfirmed";
   }
 };
 
@@ -98,17 +119,15 @@ export default function Page({ params }: PageProps) {
     }
   };
 
-  const handleCancel = async (value: boolean) => {
-    const trainingRef = doc(db, "trainings", params.id);
-
-    if (value === true) {
-      await updateDoc(trainingRef, {
-        cancelled: true,
-      });
-    } else if (value === false) {
-      await updateDoc(trainingRef, {
-        cancelled: false,
-      });
+  const handleCancel = async () => {
+    try {
+      const trainingRef = doc(db, "trainings", params.id);
+      const trainingUpdate = {
+        cancelled: !training!.cancelled,
+      };
+      await updateDoc(trainingRef, trainingUpdate);
+    } catch (err: any) {
+      console.error("Error updating document: ", err);
     }
   };
 
@@ -148,6 +167,8 @@ export default function Page({ params }: PageProps) {
                   >
                     <Select
                       style={{ width: "100%" }}
+                      size="large"
+                      defaultValue={currentAvailibility(training!, user)}
                       onChange={(value) => handleSelectChange(value)}
                       options={[
                         { label: "Confirmed", value: "confirmed" },
@@ -164,10 +185,16 @@ export default function Page({ params }: PageProps) {
                         </Text>
                       }
                     >
-                      <Switch
-                        checked={training!.cancelled}
-                        onChange={(value) => handleCancel(value)}
-                      />
+                      <Button
+                        style={{ width: "100%" }}
+                        size="large"
+                        ghost={training!.cancelled}
+                        type="primary"
+                        danger
+                        onClick={handleCancel}
+                      >
+                        {training?.cancelled ? "Un-Cancel" : "Cancel"}
+                      </Button>
                     </Form.Item>
                   )}
                 </Form>

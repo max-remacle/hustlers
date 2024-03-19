@@ -17,4 +17,5 @@ export type Game = {
   field: string;
   dod: string | null;
   dodTime: string | null;
+  cancelled: boolean
 };

@@ -82,6 +82,26 @@ const formatDate = (game: Game) => {
   }
 };
 
+const currentAvailibility = (game: Game, user: any) => {
+  if (game.confirmedPlayers.some((player) => player.id === user.uid)) {
+    return "confirmed";
+  } else if (game.declinedPlayers.some((player) => player.id === user.uid)) {
+    return "declined";
+  } else {
+    return "Unconfirmed";
+  }
+};
+
+const currentTransport = (game: Game, user: any) => {
+  if (game.rideOffers.some((player) => player.id === user.uid)) {
+    return "rideOffer";
+  } else if (game.rideRequests.some((player) => player.id === user.uid)) {
+    return "rideRequest";
+  } else {
+    return "neither";
+  }
+};
+
 export default function Page({ params }: PageProps) {
   const user = useUser();
   const [state, dispatch] = useReducer(reducer, {
@@ -133,7 +153,7 @@ export default function Page({ params }: PageProps) {
     });
 
     return () => unsubscribe();
-  }, [params.id, user]);
+  }, [params.id, user, state.game]);
 
   const handleSelectChange = async (type: string, value: string) => {
     const gameRef = doc(db, "games", params.id);
@@ -226,7 +246,9 @@ export default function Page({ params }: PageProps) {
                 <Text className={styles.dateText}>
                   {formatDate(state.game!)}
                 </Text>
-                <Text className={styles.locationText}>{state.game!.field}</Text>
+                <Text className={styles.locationText}>
+                  {state.game!.cancelled ? "Cancelled" : state.game!.field}
+                </Text>
               </>
             )}
           </div>
@@ -297,9 +319,11 @@ export default function Page({ params }: PageProps) {
                     >
                       <Select
                         style={{ width: "100%" }}
+                        size="large"
                         onChange={(value) =>
                           handleSelectChange("availability", value)
                         }
+                        defaultValue={currentAvailibility(state.game!, user)}
                         options={[
                           { label: "Confirmed", value: "confirmed" },
                           { label: "Declined", value: "declined" },
@@ -316,9 +340,11 @@ export default function Page({ params }: PageProps) {
                     >
                       <Select
                         style={{ width: "100%" }}
+                        size="large"
                         onChange={(value) =>
                           handleSelectChange("transport", value)
                         }
+                        defaultValue={currentTransport(state.game!, user)}
                         options={[
                           { label: "Need a Ride", value: "rideRequest" },
                           { label: "Can Offer a Ride", value: "rideOffer" },
@@ -335,6 +361,7 @@ export default function Page({ params }: PageProps) {
                     closeModal={closeModal}
                     modalType={state.modalType}
                     update={true}
+                    gameCancelled={state.game!.cancelled}
                     gameId={params.id}
                     opponentProp={state.game!.opponent}
                     fieldProp={state.game!.field}

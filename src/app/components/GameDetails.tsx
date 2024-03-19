@@ -20,8 +20,9 @@ const GameDetails: React.FC<GameDetailsProps> = (props) => {
   const formattedDate = format(date, "MMMM do, yyyy, h:mm a");
 
   let cardColour = "#ebebd3";
-
-  if (game.teamScore > game.opponentScore) {
+  if (!game.played && game.cancelled) {
+    cardColour = "rgba(158, 0, 0,1";
+  } else if (game.teamScore > game.opponentScore) {
     cardColour = "rgba(0, 102, 0,1)";
   } else if (game.teamScore == game.opponentScore && game.played) {
     cardColour = "rgba(94, 94, 94,1)";
@@ -48,28 +49,37 @@ const GameDetails: React.FC<GameDetailsProps> = (props) => {
           <Text underline className={styles.title}>
             {getDisplayName(game.opponent)}
           </Text>
+
           <Text className={styles.date}>{formattedDate}</Text>
           <Text className={styles.date}>{game.field}</Text>
-          <div>
-            {game.played ? (
-              <>
-                <Text className={styles.score}>Hustlers</Text>
-                <Text className={styles.score}>
-                  {`${game.teamScore} - ${game.opponentScore}`}
-                </Text>
-                <Text className={styles.score}>
-                  {getDisplayName(game.opponent)}
-                </Text>
-              </>
-            ) : (
-              <Text className={styles.score}>
-                <Text className={styles.score} underline>
-                  Confirmed Players
-                </Text>
-                {` ${game.confirmedPlayers.length}`}
-              </Text>
-            )}
-          </div>
+          {game.cancelled ? (
+            <Text underline className={styles.title}>
+              Cancelled
+            </Text>
+          ) : (
+            <>
+              <div>
+                {game.played ? (
+                  <>
+                    <Text className={styles.score}>Hustlers</Text>
+                    <Text className={styles.score}>
+                      {`${game.teamScore} - ${game.opponentScore}`}
+                    </Text>
+                    <Text className={styles.score}>
+                      {getDisplayName(game.opponent)}
+                    </Text>
+                  </>
+                ) : (
+                  <Text className={styles.score}>
+                    <Text className={styles.score} underline>
+                      Confirmed Players
+                    </Text>
+                    {` ${game.confirmedPlayers.length}`}
+                  </Text>
+                )}
+              </div>
+            </>
+          )}
         </div>
         {game.played && (
           <>
