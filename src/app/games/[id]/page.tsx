@@ -83,9 +83,10 @@ const formatDate = (game: Game) => {
 };
 
 const currentAvailibility = (game: Game, user: any) => {
-  if (game.confirmedPlayers.some((player) => player.id === user.uid)) {
+  debugger
+  if (game.confirmedPlayers.includes(user.uid)) {
     return "confirmed";
-  } else if (game.declinedPlayers.some((player) => player.id === user.uid)) {
+  } else if (game.declinedPlayers.includes(user.uid)) {
     return "declined";
   } else {
     return "Unconfirmed";
@@ -93,9 +94,9 @@ const currentAvailibility = (game: Game, user: any) => {
 };
 
 const currentTransport = (game: Game, user: any) => {
-  if (game.rideOffers.some((player) => player.id === user.uid)) {
+  if (game.rideOffers.includes(user.uid)) {
     return "rideOffer";
-  } else if (game.rideRequests.some((player) => player.id === user.uid)) {
+  } else if (game.rideRequests.includes(user.uid)) {
     return "rideRequest";
   } else {
     return "neither";
@@ -117,30 +118,6 @@ export default function Page({ params }: PageProps) {
     const unsubscribe = onSnapshot(docRef, async (docSnap) => {
       if (docSnap.exists()) {
         const gameData = docSnap.data() as Game;
-        const confirmedPlayers = docSnap.data().confirmedPlayers || [];
-        const declinedPlayers = docSnap.data().declinedPlayers || [];
-
-        const playerDataPromises = confirmedPlayers.map(
-          async (playerRef: DocumentReference<unknown, DocumentData>) => {
-            const playerSnap = await getDoc(playerRef);
-            return playerSnap.data();
-          }
-        );
-
-        const declinedPlayerDataPromises = declinedPlayers.map(
-          async (playerRef: DocumentReference<unknown, DocumentData>) => {
-            const playerSnap = await getDoc(playerRef);
-            return playerSnap.data();
-          }
-        );
-
-        const playersData = await Promise.all(playerDataPromises);
-        const declinedPlayersData = await Promise.all(
-          declinedPlayerDataPromises
-        );
-
-        gameData.confirmedPlayers = playersData;
-        gameData.declinedPlayers = declinedPlayersData;
 
         dispatch({
           type: "SET_GAME",
@@ -153,41 +130,40 @@ export default function Page({ params }: PageProps) {
     });
 
     return () => unsubscribe();
-  }, [params.id, user, state.game]);
+  }, [params.id, user]);
 
   const handleSelectChange = async (type: string, value: string) => {
     const gameRef = doc(db, "games", params.id);
-    const userRef = doc(db, "players", user.uid);
 
     if (type === "availability") {
       if (value === "confirmed") {
         await updateDoc(gameRef, {
-          confirmedPlayers: arrayUnion(userRef),
-          declinedPlayers: arrayRemove(userRef),
+          confirmedPlayers: arrayUnion(user.uid),
+          declinedPlayers: arrayRemove(user.uid),
         });
       } else if (value === "declined") {
         await updateDoc(gameRef, {
-          confirmedPlayers: arrayRemove(userRef),
-          declinedPlayers: arrayUnion(userRef),
-          rideRequests: arrayRemove(userRef),
-          rideOffers: arrayRemove(userRef),
+          confirmedPlayers: arrayRemove(user.uid),
+          declinedPlayers: arrayUnion(user.uid),
+          rideRequests: arrayRemove(user.uid),
+          rideOffers: arrayRemove(user.uid),
         });
       }
     } else if (type === "transport") {
       if (value === "rideRequest") {
         await updateDoc(gameRef, {
-          rideRequests: arrayUnion(userRef),
-          rideOffers: arrayRemove(userRef),
+          rideRequests: arrayUnion(user.uid),
+          rideOffers: arrayRemove(user.uid),
         });
       } else if (value === "rideOffer") {
         await updateDoc(gameRef, {
-          rideRequests: arrayRemove(userRef),
-          rideOffers: arrayUnion(userRef),
+          rideRequests: arrayRemove(user.uid),
+          rideOffers: arrayUnion(user.uid),
         });
       } else if (value === "neither") {
         await updateDoc(gameRef, {
-          rideRequests: arrayRemove(userRef),
-          rideOffers: arrayRemove(userRef),
+          rideRequests: arrayRemove(user.uid),
+          rideOffers: arrayRemove(user.uid),
         });
       }
     }
@@ -283,21 +259,6 @@ export default function Page({ params }: PageProps) {
                     <Text className={styles.detailsText}>
                       {state.game!.dodTime}
                     </Text>
-                  </div>
-                </div>
-                <div className={styles.playersDiv}>
-                  <Text className={styles.detailsTitle}>Players</Text>
-                  <div className={styles.listWrapper}>
-                    <List
-                      dataSource={state.game!.confirmedPlayers}
-                      renderItem={(player, index) => (
-                        <List.Item
-                          key={index}
-                          className={styles.listText}
-                        >{`${player.firstName} ${player.lastName}`}</List.Item>
-                      )}
-                      grid={{ column: 3, gutter: 16 }}
-                    />
                   </div>
                 </div>
               </>

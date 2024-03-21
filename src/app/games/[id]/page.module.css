@@ -91,10 +91,6 @@
   width: 50%;
   text-align: end;
 }
-.playersDiv {
-  flex-direction: column;
-  align-items: center;
-}
 
 .detailsTitle {
   font-size: 22px;

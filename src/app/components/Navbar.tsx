@@ -14,7 +14,7 @@ const { Title } = Typography;
 const items = [
   {
     key: "1",
-    label: "Dashboard",
+    label: "Home",
     target: "/",
   },
   {
@@ -24,11 +24,6 @@ const items = [
   },
   {
     key: "3",
-    label: "Leaderboard",
-    target: "/leaderboard",
-  },
-  {
-    key: "4",
     label: "Log Out",
   },
 ];
@@ -43,7 +38,7 @@ const Navbar: React.FC = (props) => {
   };
 
   const handleMenuClick = ({ key }: { key: string }) => {
-    if (key === "4") {
+    if (key === "3") {
       signOut();
       return;
     }
@@ -95,13 +90,10 @@ const Navbar: React.FC = (props) => {
       >
         <div style={{ display: "flex", flexDirection: "column" }}>
           <Button className={styles.mobileText} type="text" href="/">
-            Dashboard
+            Home
           </Button>
           <Button className={styles.mobileText} type="text" href="/games">
             Games
-          </Button>
-          <Button className={styles.mobileText} type="text" href="/leaderboard">
-            Leaderboard
           </Button>
           <Button
             className={styles.mobileText}

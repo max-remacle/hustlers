@@ -46,10 +46,10 @@ const formatDate = (training: Training) => {
 };
 
 const currentAvailibility = (training: Training, user: any) => {
-  if (training.confirmedPlayers.some((player) => player.id === user.uid)) {
+  if (training.confirmedPlayers.includes(user.uid)) {
     return "confirmed";
   } else if (
-    training.declinedPlayers.some((player) => player.id === user.uid)
+    training.declinedPlayers.includes(user.uid)
   ) {
     return "declined";
   } else {
@@ -68,31 +68,6 @@ export default function Page({ params }: PageProps) {
     const unsubscribe = onSnapshot(docRef, async (docSnap) => {
       if (docSnap.exists()) {
         const trainingData = docSnap.data() as Training;
-        const confirmedPlayers = docSnap.data().confirmedPlayers || [];
-        const declinedPlayers = docSnap.data().declinedPlayers || [];
-
-        const playerDataPromises = confirmedPlayers.map(
-          async (playerRef: DocumentReference<unknown, DocumentData>) => {
-            const playerSnap = await getDoc(playerRef);
-            return playerSnap.data();
-          }
-        );
-
-        const declinedPlayerDataPromises = declinedPlayers.map(
-          async (playerRef: DocumentReference<unknown, DocumentData>) => {
-            const playerSnap = await getDoc(playerRef);
-            return playerSnap.data();
-          }
-        );
-
-        const playersData = await Promise.all(playerDataPromises);
-        const declinedPlayersData = await Promise.all(
-          declinedPlayerDataPromises
-        );
-
-        trainingData.confirmedPlayers = playersData;
-        trainingData.declinedPlayers = declinedPlayersData;
-
         setTraining(trainingData);
         setIsLoading(false);
       } else {
@@ -104,17 +79,16 @@ export default function Page({ params }: PageProps) {
 
   const handleSelectChange = async (value: string) => {
     const trainingRef = doc(db, "trainings", params.id);
-    const userRef = doc(db, "players", user.uid);
 
     if (value === "confirmed") {
       await updateDoc(trainingRef, {
-        confirmedPlayers: arrayUnion(userRef),
-        declinedPlayers: arrayRemove(userRef),
+        confirmedPlayers: arrayUnion(user.uid),
+        declinedPlayers: arrayRemove(user.uid),
       });
     } else if (value === "declined") {
       await updateDoc(trainingRef, {
-        confirmedPlayers: arrayRemove(userRef),
-        declinedPlayers: arrayUnion(userRef),
+        confirmedPlayers: arrayRemove(user.uid),
+        declinedPlayers: arrayUnion(user.uid),
       });
     }
   };

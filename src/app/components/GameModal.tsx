@@ -70,6 +70,7 @@ const GameModal: React.FC<GameModalProps> = ({
           field,
           date: date!.toDate(),
           confirmedPlayers: [],
+          declinedPlayers: [],
           cancelled: false,
         };
         await addDoc(trainingRef, newTraining);

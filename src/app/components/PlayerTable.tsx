@@ -28,9 +28,9 @@ const PlayerTable: React.FC<PlayerTableProps> = ({ game }) => {
     const playerId = record.id;
 
     let status = "default";
-    if (confirmedPlayers.some((obj) => obj.id === playerId)) {
+    if (confirmedPlayers.includes(playerId)) {
       status = "success";
-    } else if (declinedPlayers.some((obj) => obj.id === playerId)) {
+    } else if (declinedPlayers.includes(playerId)) {
       status = "error";
     }
     return (
@@ -95,10 +95,10 @@ const PlayerTable: React.FC<PlayerTableProps> = ({ game }) => {
       const aId = a.id;
       const bId = b.id;
 
-      const aIsConfirmed = confirmedPlayers.some((obj) => obj.id === aId);
-      const aIsDeclined = declinedPlayers.some((obj) => obj.id === aId);
-      const bIsConfirmed = confirmedPlayers.some((obj) => obj.id === bId);
-      const bIsDeclined = declinedPlayers.some((obj) => obj.id === bId);
+      const aIsConfirmed = confirmedPlayers.includes(aId);
+      const aIsDeclined = declinedPlayers.includes(aId);
+      const bIsConfirmed = confirmedPlayers.includes(bId);
+      const bIsDeclined = declinedPlayers.includes(bId);
 
       if (aIsConfirmed && !bIsConfirmed) {
         return -1;
@@ -119,8 +119,8 @@ const PlayerTable: React.FC<PlayerTableProps> = ({ game }) => {
       let rideOffer = false;
 
       if ("rideRequests" in game && "rideOffers" in game) {
-        rideRequest = game.rideRequests.some((obj) => obj.id === player.id);
-        rideOffer = game.rideOffers.some((obj) => obj.id === player.id);
+        rideRequest = game.rideRequests.includes(player.id);
+        rideOffer = game.rideOffers.includes(player.id);
       }
       return {
         ...player,

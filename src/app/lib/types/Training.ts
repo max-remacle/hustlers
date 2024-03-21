@@ -8,6 +8,6 @@ export type Training = {
     nanoseconds: number;
   };
   cancelled: boolean;
-  confirmedPlayers: Player[];
-  declinedPlayers: Player[];
+  confirmedPlayers: string[];
+  declinedPlayers: string[];
 };
