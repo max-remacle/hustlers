@@ -101,6 +101,20 @@ a {
   text-decoration: none;
 }
 
+.ant-picker-dropdown {
+  @media (max-width: 768px) {
+    inset: 51.9333px auto auto 0px !important;
+  }
+}
+.ant-picker-dropdown .ant-picker-panel-container {
+  @media (max-width: 768px) {
+    max-width: 98vw !important;
+    overflow: auto !important;
+    inset: 51.9333px auto auto 0px !important;
+  }
+}
+
+
 @media (prefers-color-scheme: dark) {
   html {
     color-scheme: dark;

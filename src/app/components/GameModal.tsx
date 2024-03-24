@@ -323,7 +323,6 @@ const GameModal: React.FC<GameModalProps> = ({
                 value={date}
                 inputReadOnly={true}
                 placement="topLeft"
-                popupStyle={{ marginLeft: "150px", width: "95%" }}
               />
             </Form.Item>
             <Form.Item>
