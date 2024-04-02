@@ -11,7 +11,7 @@ import { Game } from "../lib/types/Game";
 const { Text } = Typography;
 
 export default function Page() {
-  const [playedGames, setPlayedGames] = useState<boolean>(true);
+  const [playedGames, setPlayedGames] = useState<boolean>(false);
   const games = useGameStore((state: any) => state.games);
   const updateGames = useGameStore((state: any) => state.updateGames);
 
