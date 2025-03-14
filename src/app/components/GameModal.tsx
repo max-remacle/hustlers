@@ -208,10 +208,6 @@ const GameModal: React.FC<GameModalProps> = ({
                 </Text>
               }
               name="dod"
-              rules={[
-                { required: true, message: "Please Enter a Dick of the Day" },
-              ]}
-              validateTrigger="onBlur"
             >
               <Input
                 size="large"
@@ -226,13 +222,6 @@ const GameModal: React.FC<GameModalProps> = ({
                 </Text>
               }
               name="dodTime"
-              rules={[
-                {
-                  required: true,
-                  message: "Please Enter a Dick of the Day Time",
-                },
-              ]}
-              validateTrigger="onBlur"
             >
               <Input
                 size="large"
